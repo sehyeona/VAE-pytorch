@@ -3,6 +3,7 @@ import os
 import numpy as np
 import math
 import itertools
+from munch import Munch
 
 import torch
 import torch.nn.functional as F
@@ -131,3 +132,18 @@ class Decoder(nn.Module):
 
     def __call__(self, *args, **kwargs):
         return super(Decoder, self).__call__(*args, **kwargs)
+
+
+def build_nets(args):
+    encoder = Encoder(img_size=args.img_size,
+                      channel_in=args.channel_in,
+                      target_size=args.target_size,
+                      max_channel=args.max_channel,
+                      latent_dim=args.latent_dim)
+    decoder = Decoder(img_size=args.img_size,
+                      channel_in=args.channel_in,
+                      start_size=args.start_size,
+                      min_channel=args.min_channel,
+                      latent_dim=args.latent_dim)
+    nets = Munch(encoder=encoder, decoder=decoder)
+    return nets
