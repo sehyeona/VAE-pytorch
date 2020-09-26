@@ -66,7 +66,7 @@ class Encoder(nn.Module):
         blocks += [nn.BatchNorm2d(channel_in)]
         blocks += [nn.LeakyReLU(0.2)]
         for _ in range(repeat_num):
-            channel_out = min(2*channel_in, max)
+            channel_out = min(2*channel_in, max_channel)
             blocks += [EncoderBlock(channel_in=channel_in, channel_out=channel_out)]
             channel_in = channel_out
         # final shape Bx256x8x8
@@ -147,3 +147,9 @@ def build_nets(args):
                       latent_dim=args.latent_dim)
     nets = Munch(encoder=encoder, decoder=decoder)
     return nets
+
+# if __name__ == "__main__":
+#     args = Munch(img_size=256, channel_in=32, target_size=8, max_channel=256, latent_dim=64, start_size=8, min_channel=16)
+#     nets = build_nets(args)
+#     for name, module in nets.items():
+#         print(name, module)
