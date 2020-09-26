@@ -58,10 +58,10 @@ class VAE(nn.Module):
         for optim in self.optims.values():
             optim.zero_grad()
 
-    def compute_VAE_loss(self, nets, args, x):
-        mu, logvar = nets.encoder(x)
+    def compute_VAE_loss(self, x):
+        mu, logvar = self.nets.encoder(x)
         z = reparameterization(self.args.latent_dim, mu, logvar)
-        recon_x = nets.decoder(z)
+        recon_x = self.nets.decoder(z)
         KL_loss = compute_KL_loss(mu, logvar)
         r_loss = compute_reconstruct_loss(x, recon_x)
         loss = KL_loss + r_loss
@@ -84,8 +84,7 @@ class VAE(nn.Module):
             for _, x in enumerate(train_loader):
                 x = x[0].to(self.device)
                 # train the ResVAE
-                vae_loss, resvae_loss_ref = self.compute_VAE_loss(
-                    nets, args, x)
+                vae_loss, resvae_loss_ref = self.compute_VAE_loss(x)
                 self._reset_grad()
                 vae_loss.backward()
                 optims.resvae.step()
