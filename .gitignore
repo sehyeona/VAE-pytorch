@@ -1,0 +1,14 @@
+# vscode
+.vscode
+
+# ipynb_checkpoints
+# venv
+venv
+
+# DS_store
+.DS_store
+
+# __pycahe__
+*/__pycache__
+__pycache__
+__pycache__/*
