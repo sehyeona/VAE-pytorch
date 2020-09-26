@@ -27,12 +27,13 @@ def main(args):
         loaders = Munch(src=get_train_loader(root=args.train_img_dir,
                                             which='train',
                                             img_size=args.img_size,
-                                            batch_size=args.img_size,
+                                            batch_size=args.batch_size,
                                             prob=args.randcrop_prob,
                                             num_workers=args.num_workers,))
         vae.train(loaders)
 
 if __name__ == '__main__':
+    torch.cuda.empty_cache()
     parser = argparse.ArgumentParser()
     # image path for vectorization
     parser.add_argument('--img_path', type=str, default=None,

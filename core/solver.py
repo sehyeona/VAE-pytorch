@@ -79,15 +79,17 @@ class VAE(nn.Module):
 
         print('Start training...')
         start_time = time.time()
+        train_loader = loaders.src
         for i in range(args.resume_iter, args.total_iters):
-            train_loader = loaders.src
-            for _, x in enumerate(train_loader):
-                x = x[0].to(self.device)
-                # train the ResVAE
-                vae_loss, resvae_loss_ref = self.compute_VAE_loss(x)
+            for x in train_loader:
+                x = x.to(self.device)
+                # x = x[0].to(self.device)
+                # train the VAE
+                vae_loss, vae_loss_ref = self.compute_VAE_loss(x)
                 self._reset_grad()
                 vae_loss.backward()
-                optims.resvae.step()
+                optims.encoder.step()
+                optims.decoder.step()
             
             # save model checkpoints
             if (i+1) % args.save_every == 0:
@@ -99,11 +101,10 @@ class VAE(nn.Module):
                 elapsed = str(datetime.timedelta(seconds=elapsed))[:-7]
                 log = "Elapsed time [%s], Iteration [%i/%i], " % (elapsed, i+1, args.total_iters)
                 all_losses = dict()
-                for loss, prefix in zip([resvae_loss_ref],
-                                        ['ResVAE_loss',]):
+                for loss, prefix in zip([vae_loss_ref],
+                                        ['VAE_loss',]):
                     for key, value in loss.items():
                         all_losses[prefix + key] = value
-                all_losses['G/lambda_ds'] = args.lambda_ds
                 log += ' '.join(['%s: [%.4f]' % (key, value) for key, value in all_losses.items()])
                 print(log)
     
