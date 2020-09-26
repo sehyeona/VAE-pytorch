@@ -7,7 +7,7 @@ import torch
 
 from core.dataloader import get_train_loader
 from core.solver import VAE
-from config import CONFIG
+
 
 def str2bool(v):
     return v.lower() in ('true')
@@ -28,7 +28,7 @@ def main(args):
                                             which='train',
                                             img_size=args.img_size,
                                             batch_size=args.img_size,
-                                            prob=args.randcrop_porb,
+                                            prob=args.randcrop_prob,
                                             num_workers=args.num_workers,))
         vae.train(loaders)
 

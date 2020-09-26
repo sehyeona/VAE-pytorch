@@ -81,7 +81,7 @@ def get_train_loader(root, which='train', img_size=256,
     ])
 
     if which == 'train':
-        dataset = ImageFolder(root, transform)
+        dataset = DefaultDataset(root, transform)
     elif which == 'test':
         dataset = TestDataset(root, transform)
     else:
@@ -120,3 +120,6 @@ def get_eval_loader(root, img_size=512, batch_size=32,
                            num_workers=num_workers,
                            pin_memory=True,
                            drop_last=drop_last)
+
+if __name__ == '__main__':
+    print(len(listdir('/home/ubuntu/data/상의')))

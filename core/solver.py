@@ -9,10 +9,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 # import utils
-from model import build_nets
-from checkpoint import CheckpointIO
-from loss import compute_KL_loss, compute_reconstruct_loss
-from utils import reparameterization
+from .model import build_nets
+from .checkpoint import CheckpointIO
+from .loss import compute_KL_loss, compute_reconstruct_loss
+from .utils import reparameterization
 
 
 class VAE(nn.Module):
@@ -58,7 +58,7 @@ class VAE(nn.Module):
         for optim in self.optims.values():
             optim.zero_grad()
 
-    def compute_vae_loss(self, nets, args, x):
+    def compute_VAE_loss(self, nets, args, x):
         mu, logvar = nets.encoder(x)
         z = reparameterization(self.args.latent_dim, mu, logvar)
         recon_x = nets.decoder(z)
