@@ -16,7 +16,7 @@ class CheckpointIO(object):
         outdict = dict()
         for name, module in self.module_dict.items():
             outdict[name] = module
-        torch.save(outdict)
+        torch.save(outdict, fname)
 
     def load(self, step):
         fname = self.fname_template.format(step)
