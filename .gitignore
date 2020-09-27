@@ -18,3 +18,10 @@ data
 
 # expr
 expr
+
+# ckpt
+*.ckpt
+
+# image 
+*.jpg
+*.png
