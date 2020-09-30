@@ -76,8 +76,8 @@ def get_train_loader(root, which='train', img_size=256,
         transforms.Resize([img_size, img_size]),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5],
-                             std=[0.5, 0.5, 0.5]),
+        # transforms.Normalize(mean=[0.5, 0.5, 0.5],
+                            #  std=[0.5, 0.5, 0.5]),
     ])
 
     if which == 'train':

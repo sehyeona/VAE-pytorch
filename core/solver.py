@@ -45,7 +45,12 @@ class VAE(nn.Module):
             self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets.ckpt'), **self.nets)]
 
         self.to(self.device)
-
+    
+    def reparameterize(self, mu, logvar):
+        std = torch.exp(0.5 * logvar)
+        eps = torch.randn_like(std)
+        return mu + eps * std
+   
     def _save_checkpoint(self, step):
         for ckptio in self.ckptios:
             ckptio.save(step)
@@ -60,10 +65,10 @@ class VAE(nn.Module):
 
     def compute_VAE_loss(self, x):
         mu, logvar = self.nets.encoder(x)
-        z = reparameterization(self.args.latent_dim, mu, logvar)
+        z = self.reparameterize(mu, logvar)
         recon_x = self.nets.decoder(z)
         KL_loss = compute_KL_loss(mu, logvar)
-        r_loss = compute_reconstruct_loss(x, recon_x)
+        r_loss = self.args.recon_weight * compute_reconstruct_loss(x, recon_x)
         loss = KL_loss + r_loss
         return loss, Munch(KL_loss = KL_loss, r_loss=r_loss, reg=loss)
 
@@ -83,7 +88,6 @@ class VAE(nn.Module):
         for i in range(args.resume_iter, args.total_iters):
             for x in train_loader:
                 x = x.to(self.device)
-                # x = x[0].to(self.device)
                 # train the VAE
                 vae_loss, vae_loss_ref = self.compute_VAE_loss(x)
                 self._reset_grad()

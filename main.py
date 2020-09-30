@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
 
     # weight for objective functions
-    parser.add_argument('--lambda_reg', type=float, default=1,
+    parser.add_argument('--recon_weight', type=float, default=100,
                         help='Weight for R1 regularization')
 
     # training arguments
