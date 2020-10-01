@@ -19,14 +19,17 @@ class VAE(nn.Module):
     def __init__(self, args):
         super().__init__()
         self.args = args
+        print(self.args)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.nets = build_nets(args)
         # below setattrs are to make networks be children of Solver, e.g., for self.to(self.device)
         for name, module in self.nets.items():
+            print(name, module)
             # set attribute to solver obejct name , module
             setattr(self, name, module)
 
+            
             # train mode
         if args.mode == 'train':
             self.optims = Munch()
@@ -111,6 +114,11 @@ class VAE(nn.Module):
                         all_losses[prefix + key] = value
                 log += ' '.join(['%s: [%.4f]' % (key, value) for key, value in all_losses.items()])
                 print(log)
-    
+
+    def forward(self, x):
+        mu, logvar = self.nets.encoder(x)
+        vector = self.reparameterize(mu, logvar)
+        recon_img = self.nets.decoder(vector)
+        return recon_img    
     
 

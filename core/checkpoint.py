@@ -15,7 +15,7 @@ class CheckpointIO(object):
         print("Saving Checkpoints into %s" %fname)
         outdict = dict()
         for name, module in self.module_dict.items():
-            outdict[name] = module
+            outdict[name] = module.state_dict()
         torch.save(outdict, fname)
 
     def load(self, step):
@@ -23,10 +23,9 @@ class CheckpointIO(object):
         print(fname)
         assert os.path.exists(fname), fname + " does not exist!"
         print("Loading Checkpoint from %s..." % fname)
-        if torch.cuda.is_available() :
+        if torch.cuda.is_available():
             module_dict = torch.load(fname)
-        else :
+        else:
             module_dict = torch.load(fname, map_location=torch.device('cpu'))
-        # for name, module in self.module_dict.items():
-        #     # module = torch.load(module_dict[name])
-        #     module.load_state_dict(module_dict[name])
+        for name, module in self.module_dict.items():
+            module.load_state_dict(module_dict[name])

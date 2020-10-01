@@ -9,6 +9,7 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 from torch.autograd import Variable
+from torchsummary import summary
 
 # ten = tensor
 # encoder block (used in encoder and discriminator)
@@ -19,6 +20,7 @@ class EncoderBlock(nn.Module):
         self.conv = nn.Conv2d(in_channels=channel_in, out_channels=channel_out, kernel_size=5, padding=2, stride=2,
                               bias=False)
         self.bn = nn.BatchNorm2d(num_features=channel_out, momentum=0.9)
+        self.activate = nn.LeakyReLU(0.2)
 
     def forward(self, tensor, out=False, t = False):
         # here we want to be able to take an intermediate output for reconstruction error
@@ -26,12 +28,12 @@ class EncoderBlock(nn.Module):
             tensor = self.conv(tensor)
             tensor_out = tensor
             tensor = self.bn(tensor)
-            tensor = F.relu(tensor, False)
+            tensor = self.activate(tensor)
             return tensor, tensor_out
         else:
             tensor = self.conv(tensor)
             tensor = self.bn(tensor)
-            tensor = F.relu(tensor, True)
+            tensor = self.activate(tensor)
             return tensor
 
 
@@ -43,11 +45,12 @@ class DecoderBlock(nn.Module):
         self.conv = nn.ConvTranspose2d(channel_in, channel_out, kernel_size=5, padding=2, stride=2, output_padding=1,
                                        bias=False)
         self.bn = nn.BatchNorm2d(channel_out, momentum=0.9)
+        self.activate = nn.LeakyReLU(0.2)
 
     def forward(self, tensor):
         tensor = self.conv(tensor)
         tensor = self.bn(tensor)
-        tensor = F.relu(tensor, True)
+        tensor = self.activate(tensor)
         return tensor
 
 
