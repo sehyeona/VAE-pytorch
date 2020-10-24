@@ -67,6 +67,8 @@ if __name__ == '__main__':
     # weight for objective functions
     parser.add_argument('--recon_weight', type=int, default=100,
                         help='Weight for reconstruction error')
+    parser.add_argument('--kl_weight', type=int, default=1,
+                        help='Weight for kl divergence error')
 
     # training arguments
     parser.add_argument('--randcrop_prob', type=float, default=0.5,

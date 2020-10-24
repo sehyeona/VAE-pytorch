@@ -70,7 +70,7 @@ class VAE(nn.Module):
         mu, logvar = self.nets.encoder(x)
         z = self.reparameterize(mu, logvar)
         recon_x = self.nets.decoder(z)
-        KL_loss = compute_KL_loss(mu, logvar)
+        KL_loss = self.args.kl_weight * compute_KL_loss(mu, logvar)
         r_loss = self.args.recon_weight * compute_reconstruct_loss(x, recon_x)
         loss = KL_loss + r_loss
         return loss, Munch(KL_loss = KL_loss, r_loss=r_loss, reg=loss)

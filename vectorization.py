@@ -82,7 +82,7 @@ if __name__ == '__main__':
     args.target_size = 8
     args.start_size = 8
     args.latent_dim = 64
-    args.resume_iter = 30
+    args.resume_iter = 200
     args.checkpoint_dir = './expr/recon_1000_channel_256'
     args.mode = 'eval'
     vectorMachine = Vectorization(args)
