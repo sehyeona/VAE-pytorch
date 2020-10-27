@@ -9,6 +9,8 @@ from PIL import Image
 import time
 from copy import deepcopy
 
+from numpy import dot
+from numpy.linalg import norm
 from torchvision import transforms
 from torchvision.utils import save_image
 from functools import wraps
@@ -40,9 +42,18 @@ class Vectorization(object):
 
         self.vae = VAE(args)
         # self.vae.device = 'cpu'
-        self.vae._load_checkpoint(step = self.args.resume_iter)
+        self.load_checkpoint()
         self.vae.encoder.eval()
         self.vae.decoder.eval()
+
+    def load_checkpoint(self):
+        fname = self.args.checkpoint_fname
+        if torch.cuda.is_available():
+            module_dict = torch.load(fname)
+        else:
+            module_dict = torch.load(fname, map_location=torch.device('cpu'))
+        for name in module_dict.keys():
+            self.vae.__getattr__(name).load_state_dict(module_dict[name])
 
     def resize_img(self, imgPath):
         img = Image.open(imgPath).convert('RGB')
@@ -71,6 +82,9 @@ class Vectorization(object):
         vector = self.vae.reparameterize(*self.vae.encoder(real_img)).to(device='cpu')
         return vector.detach().numpy()
 
+def cosine_similarity(a, b):
+    return dot(a, b) / (norm(a) * norm(b))
+
 ## example
 if __name__ == '__main__': 
     args = Munch()
@@ -82,9 +96,8 @@ if __name__ == '__main__':
     args.target_size = 8
     args.start_size = 8
     args.latent_dim = 64
-    args.resume_iter = 200
-    args.checkpoint_dir = './expr/recon_1000_channel_256'
-    args.mode = 'eval'
+    args.checkpoint_fname = '/home/ubuntu/VAE-pytorch/expr/recon_1000_kl_10_channel_256/000300_nets.ckpt'
+    args.mode = 'vector'
     vectorMachine = Vectorization(args)
     vectorMachine.reconstruct_img("/home/ubuntu/VAE-pytorch/heeloo.png")
     vectorMachine.reconstruct_img("/home/ubuntu/VAE-pytorch/heeloo.png")
@@ -92,6 +105,7 @@ if __name__ == '__main__':
     v2 = vectorMachine.vectorization_one_img("/home/ubuntu/VAE-pytorch/heeloo.png")
     print(v1)
     print(v2)
+    print("Cosine similarity of two same image: ", cosine_similarity(v1[0], v2[0]))
     # v2 = vectorMachine.vectorization_one_img("/home/ubuntu/VAE-pytorch/상의_긴팔 티셔츠_1145.png")
     # print(v1)
     # print(v2)

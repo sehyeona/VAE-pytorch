@@ -44,6 +44,12 @@ class VAE(nn.Module):
             self.ckptios = [
                 CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets.ckpt'), **self.nets),
                 CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_optims.ckpt'), **self.optims)]
+                
+        elif args.mode == "vector":
+            self.ckptios = [
+                CheckpointIO(args.checkpoint_fname, **self.nets)
+            ]
+            
         else:
             self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets.ckpt'), **self.nets)]
 
@@ -58,9 +64,9 @@ class VAE(nn.Module):
         for ckptio in self.ckptios:
             ckptio.save(step)
 
-    def _load_checkpoint(self, step):
+    def _load_checkpoint(self, step, mode="training"):
         for ckptio in self.ckptios:
-            ckptio.load(step)
+            ckptio.load(step)             
 
     def _reset_grad(self):
         for optim in self.optims.values():
@@ -70,7 +76,7 @@ class VAE(nn.Module):
         mu, logvar = self.nets.encoder(x)
         z = self.reparameterize(mu, logvar)
         recon_x = self.nets.decoder(z)
-        KL_loss = self.args.kl_weight * compute_KL_loss(mu, logvar)
+        KL_loss = compute_KL_loss(mu, logvar)
         r_loss = self.args.recon_weight * compute_reconstruct_loss(x, recon_x)
         loss = KL_loss + r_loss
         return loss, Munch(KL_loss = KL_loss, r_loss=r_loss, reg=loss)
