@@ -90,13 +90,13 @@ if __name__ == '__main__':
     args = Munch()
     args.img_size = 256
     args.encoder_channel_in = 32
-    args.decoder_channel_in = 128
+    args.decoder_channel_in = 256
     args.max_channel = 256
     args.min_channel = 16
     args.target_size = 8
     args.start_size = 8
     args.latent_dim = 64
-    args.checkpoint_fname = '/home/ubuntu/VAE-pytorch/expr/recon_1000_kl_10_channel_256/000300_nets.ckpt'
+    args.checkpoint_fname = '/home/ubuntu/VAE-pytorch/expr/intermediate_recon/recon_1000_kl_100/000140_nets.ckpt'
     args.mode = 'vector'
     vectorMachine = Vectorization(args)
     vectorMachine.reconstruct_img("/home/ubuntu/VAE-pytorch/heeloo.png")
@@ -106,6 +106,7 @@ if __name__ == '__main__':
     print(v1)
     print(v2)
     print("Cosine similarity of two same image: ", cosine_similarity(v1[0], v2[0]))
-    # v2 = vectorMachine.vectorization_one_img("/home/ubuntu/VAE-pytorch/상의_긴팔 티셔츠_1145.png")
+    # v2 = vectorMachine.vectorization_one_img("/home/ubu
+    # ntu/VAE-pytorch/상의_긴팔 티셔츠_1145.png")
     # print(v1)
     # print(v2)

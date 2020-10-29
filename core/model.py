@@ -42,7 +42,7 @@ class DecoderBlock(nn.Module):
     def __init__(self, channel_in, channel_out):
         super().__init__()
         # transpose convolution to double the dimensions
-        self.conv = nn.ConvTranspose2d(channel_in, channel_out, kernel_size=5, padding=2, stride=2, output_padding=1,
+        self.conv = nn.ConvTranspose2d(channel_in, channel_out, kernel_size=3, padding=1, stride=2, output_padding=1,
                                        bias=False)
         self.bn = nn.BatchNorm2d(channel_out, momentum=0.9)
         self.activate = nn.LeakyReLU(0.2)
@@ -119,6 +119,7 @@ class Decoder(nn.Module):
             channel_in = channel_out
 
         # final conv to get 3 channels and tanh layer
+        print(channel_in)
         blocks.append(nn.Sequential(
             nn.Conv2d(in_channels=channel_in, out_channels=3, kernel_size=5, stride=1, padding=2),
             nn.Tanh()
